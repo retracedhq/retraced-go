@@ -50,10 +50,14 @@ func (c *Client) ReportEvent(event *Event) error {
 	return nil
 }
 
-func (c *Client) GetViewerLink(foreignActorId string, foreignTeamId string) (*ViewerLink, error) {
+func (c *Client) GetViewerLink(foreignActorId string, foreignTeamId string, format string) (*ViewerLink, error) {
 	params := url.Values{}
 	params.Add("actor_id", foreignActorId)
 	params.Add("team_id", foreignTeamId)
+
+	if format != "" {
+		params.Add("output", format)
+	}
 
 	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewerlink", c.Endpoint, c.ProjectId))
 	if err != nil {
