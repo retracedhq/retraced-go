@@ -50,16 +50,13 @@ func (c *Client) ReportEvent(event *Event) error {
 	return nil
 }
 
-func (c *Client) GetViewerLink(foreignActorId string, foreignTeamId string, format string) (*ViewerLink, error) {
+func (c *Client) GetViewerToken(foreignActorId string, foreignTeamId string) (*ViewerToken, error) {
 	params := url.Values{}
 	params.Add("actor_id", foreignActorId)
 	params.Add("team_id", foreignTeamId)
 
-	if format != "" {
-		params.Add("output", format)
-	}
-
-	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewerlink", c.Endpoint, c.ProjectId))
+	fmt.Printf(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.ProjectId))
+	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.ProjectId))
 	if err != nil {
 		return nil, err
 	}
@@ -89,10 +86,10 @@ func (c *Client) GetViewerLink(foreignActorId string, foreignTeamId string, form
 		fmt.Printf("%s", err)
 	}
 
-	viewerLink := ViewerLink{}
-	if err := json.Unmarshal(contents, &viewerLink); err != nil {
+	viewerToken := ViewerToken{}
+	if err := json.Unmarshal(contents, &viewerToken); err != nil {
 		return nil, err
 	}
 
-	return &viewerLink, nil
+	return &viewerToken, nil
 }
