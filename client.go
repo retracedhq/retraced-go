@@ -36,8 +36,7 @@ func (c *Client) ReportEvent(event *Event) error {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.Token))
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -55,7 +54,6 @@ func (c *Client) GetViewerToken(foreignActorId string, foreignTeamId string) (*V
 	params.Add("actor_id", foreignActorId)
 	params.Add("team_id", foreignTeamId)
 
-	fmt.Printf(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.ProjectId))
 	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.ProjectId))
 	if err != nil {
 		return nil, err
@@ -70,8 +68,7 @@ func (c *Client) GetViewerToken(foreignActorId string, foreignTeamId string) (*V
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.Token))
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +80,7 @@ func (c *Client) GetViewerToken(foreignActorId string, foreignTeamId string) (*V
 
 	contents, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("%s", err)
+		return nil, err
 	}
 
 	viewerToken := ViewerToken{}
