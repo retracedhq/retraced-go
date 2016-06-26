@@ -1,4 +1,4 @@
-package auditable
+package retraced
 
 type EventLocation struct {
 	Country   string  `json:"country"`

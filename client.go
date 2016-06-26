@@ -1,4 +1,4 @@
-package auditable
+package retraced
 
 import (
 	"bytes"
@@ -10,16 +10,16 @@ import (
 )
 
 type Client struct {
-	ProjectId string
+	ProjectID string
 	Token     string
 	Endpoint  string
 }
 
-func NewClient(projectId string, apiToken string) (*Client, error) {
+func NewClient(projectID string, apiToken string) (*Client, error) {
 	return &Client{
-		ProjectId: projectId,
+		ProjectID: projectID,
 		Token:     apiToken,
-		Endpoint:  "https://api.auditable.io",
+		Endpoint:  "https://api.retraced.io",
 	}, nil
 }
 
@@ -28,7 +28,7 @@ func (c *Client) ReportEvent(event *Event) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/project/%s/event", c.Endpoint, c.ProjectId), bytes.NewBuffer(encoded))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/project/%s/event", c.Endpoint, c.ProjectID), bytes.NewBuffer(encoded))
 	if err != nil {
 		return err
 	}
@@ -43,18 +43,18 @@ func (c *Client) ReportEvent(event *Event) error {
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("Unexpected response from auditable api: %d", resp.StatusCode)
+		return fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
 	}
 
 	return nil
 }
 
-func (c *Client) GetViewerToken(foreignActorId string, foreignTeamId string) (*ViewerToken, error) {
+func (c *Client) GetViewerToken(foreignActorID string, foreignTeamID string) (*ViewerToken, error) {
 	params := url.Values{}
-	params.Add("actor_id", foreignActorId)
-	params.Add("team_id", foreignTeamId)
+	params.Add("actor_id", foreignActorID)
+	params.Add("team_id", foreignTeamID)
 
-	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.ProjectId))
+	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.ProjectID))
 	if err != nil {
 		return nil, err
 	}
