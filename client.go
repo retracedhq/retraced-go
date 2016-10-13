@@ -9,32 +9,41 @@ import (
 	"net/url"
 )
 
+const (
+	apiVersion = 2
+)
+
+// Client represents a client that can send events into the retraced service.
 type Client struct {
-	ProjectID string
-	Token     string
+	projectID string
+	token     string
 	Endpoint  string
 }
 
+// NewClient creates a new retraced api client that can be used to send events in
 func NewClient(projectID string, apiToken string) (*Client, error) {
 	return &Client{
-		ProjectID: projectID,
-		Token:     apiToken,
+		projectID: projectID,
+		token:     apiToken,
 		Endpoint:  "https://api.retraced.io",
 	}, nil
 }
 
+// ReportEvent is the method to call to send a new event.
 func (c *Client) ReportEvent(event *Event) error {
+	event.apiVersion = apiVersion
+
 	encoded, err := json.Marshal(event)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/project/%s/event", c.Endpoint, c.ProjectID), bytes.NewBuffer(encoded))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/project/%s/event", c.Endpoint, c.projectID), bytes.NewBuffer(encoded))
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.Token))
+	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.token))
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -49,12 +58,12 @@ func (c *Client) ReportEvent(event *Event) error {
 	return nil
 }
 
-func (c *Client) GetViewerToken(foreignActorID string, foreignTeamID string) (*ViewerToken, error) {
+// GetViewerToken will return a one-time use token that can be used to view a teams audit log.
+func (c *Client) GetViewerToken(teamID string) (*ViewerToken, error) {
 	params := url.Values{}
-	params.Add("actor_id", foreignActorID)
-	params.Add("team_id", foreignTeamID)
+	params.Add("team_id", teamID)
 
-	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.ProjectID))
+	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.projectID))
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +75,7 @@ func (c *Client) GetViewerToken(foreignActorID string, foreignTeamID string) (*V
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.Token))
+	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.token))
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -75,7 +84,7 @@ func (c *Client) GetViewerToken(foreignActorID string, foreignTeamID string) (*V
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Unexpected response from auditable api: %d", resp.StatusCode)
+		return nil, fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
 	}
 
 	contents, err := ioutil.ReadAll(resp.Body)
