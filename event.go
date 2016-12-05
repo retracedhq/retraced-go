@@ -31,7 +31,7 @@ type Event struct {
 	Actor *Actor `json:"actor"`
 
 	// TeamID is the team that will be able to see this event in the audit log
-	TeamID string `json:"team_id"`
+	Group *Group `json:"group"`
 
 	// Fields are any additional data to store with the event
 	Fields map[string]interface{} `json:"fields,omitempty"`
