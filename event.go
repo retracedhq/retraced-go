@@ -15,8 +15,8 @@ type Event struct {
 	// Action is a short, readable word to describe the action
 	Action string `json:"action"`
 
-	// Object represents the item that had an action performed on it
-	Object *Object `json:"object,omitempty"`
+	// Target represents the item that had an action performed on it
+	Target *Target `json:"item,omitempty"`
 
 	// Title is the title of the event to display in the audit log
 	Title string `json:"title"`
