@@ -3,7 +3,7 @@ package retraced
 // Actor represents an entity that performs an action
 type Actor struct {
 	// Id is the unique id (in the environment) for this actor
-	Id string `json:"id"`
+	ID string `json:"id"`
 
 	// Name is the display name for this actor. It can be email
 	Name string `json:"name"`
