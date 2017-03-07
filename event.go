@@ -55,27 +55,27 @@ func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	if event.Action == "" {
 		return fmt.Errorf("Missing required field for hash verification: Action")
 	}
-	if event.Group == nil || event.Group.Id == "" {
+	if event.Group == nil || event.Group.ID == "" {
 		return fmt.Errorf("Missing required field for hash verification: Group.Id")
 	}
 
 	concat := &bytes.Buffer{}
-	fmt.Fprintf(concat, "%s:", encodePassOne(newEvent.Id))
+	fmt.Fprintf(concat, "%s:", encodePassOne(newEvent.ID))
 	fmt.Fprintf(concat, "%s:", encodePassOne(event.Action))
 
 	targetId := ""
 	if event.Target != nil {
-		targetId = event.Target.Id
+		targetId = event.Target.ID
 	}
 	fmt.Fprintf(concat, "%s:", encodePassOne(targetId))
 
 	actorId := ""
 	if event.Actor != nil {
-		actorId = event.Actor.Id
+		actorId = event.Actor.ID
 	}
 	fmt.Fprintf(concat, "%s:", encodePassOne(actorId))
 
-	fmt.Fprintf(concat, "%s:", encodePassOne(event.Group.Id))
+	fmt.Fprintf(concat, "%s:", encodePassOne(event.Group.ID))
 	fmt.Fprintf(concat, "%s:", encodePassOne(event.SourceIp))
 	if event.IsFailure {
 		fmt.Fprint(concat, "1:")

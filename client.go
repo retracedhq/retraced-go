@@ -30,7 +30,7 @@ func NewClient(projectId string, apiToken string) (*Client, error) {
 }
 
 type NewEventRecord struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Hash string `json:"hash"`
 }
 

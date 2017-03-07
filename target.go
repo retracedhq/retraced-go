@@ -3,7 +3,7 @@ package retraced
 // Target represents an object that an action was taken on
 type Target struct {
 	// Id is the id of the target
-	Id string `json:"id"`
+	ID string `json:"id"`
 
 	// Name can be used to represent the name of the target
 	Name string `json:"name"`
