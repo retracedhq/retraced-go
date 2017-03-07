@@ -31,8 +31,8 @@ type Event struct {
 	// Description is a string with the full details of the event
 	Description string `json:"description"`
 
-	// SourceIp is the client ip address where the event was performed
-	SourceIp string `json:"source_ip"`
+	// SourceIP is the client ip address where the event was performed
+	SourceIP string `json:"source_ip"`
 
 	// Actor represents the entity that performed the action
 	Actor *Actor `json:"actor"`
@@ -76,7 +76,7 @@ func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	fmt.Fprintf(concat, "%s:", encodePassOne(actorId))
 
 	fmt.Fprintf(concat, "%s:", encodePassOne(event.Group.ID))
-	fmt.Fprintf(concat, "%s:", encodePassOne(event.SourceIp))
+	fmt.Fprintf(concat, "%s:", encodePassOne(event.SourceIP))
 	if event.IsFailure {
 		fmt.Fprint(concat, "1:")
 	} else {

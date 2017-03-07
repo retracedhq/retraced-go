@@ -8,7 +8,7 @@ func TestHashMismatch(t *testing.T) {
 		Group: &Group{
 			ID: "Customer: XYZ",
 		},
-		SourceIp:    "1.2.3.4",
+		SourceIP:    "1.2.3.4",
 		IsAnonymous: true,
 		Fields: map[string]string{
 			"custom": "123",
