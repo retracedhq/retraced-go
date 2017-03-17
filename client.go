@@ -15,15 +15,15 @@ const (
 
 // Client represents a client that can send events into the retraced service.
 type Client struct {
-	projectId string
+	projectID string
 	token     string
 	Endpoint  string
 }
 
 // NewClient creates a new retraced api client that can be used to send events in
-func NewClient(projectId string, apiToken string) (*Client, error) {
+func NewClient(projectID string, apiToken string) (*Client, error) {
 	return &Client{
-		projectId: projectId,
+		projectID: projectID,
 		token:     apiToken,
 		Endpoint:  "https://api.retraced.io",
 	}, nil
@@ -42,7 +42,7 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/project/%s/event", c.Endpoint, c.projectId), bytes.NewBuffer(encoded))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/project/%s/event", c.Endpoint, c.projectID), bytes.NewBuffer(encoded))
 	if err != nil {
 		return nil, err
 	}
@@ -74,11 +74,12 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 }
 
 // GetViewerToken will return a one-time use token that can be used to view a group's audit log.
-func (c *Client) GetViewerToken(groupId string) (*ViewerToken, error) {
+func (c *Client) GetViewerToken(groupID string, isAdmin bool) (*ViewerToken, error) {
 	params := url.Values{}
-	params.Add("group_id", groupId)
+	params.Add("group_id", groupID)
+	params.Add("is_admin", isAdmin)
 
-	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.projectId))
+	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.projectID))
 	if err != nil {
 		return nil, err
 	}
