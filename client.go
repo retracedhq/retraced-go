@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 const (
@@ -77,7 +78,7 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 func (c *Client) GetViewerToken(groupID string, isAdmin bool) (*ViewerToken, error) {
 	params := url.Values{}
 	params.Add("group_id", groupID)
-	params.Add("is_admin", isAdmin)
+	params.Add("is_admin", strconv.FormatBool(isAdmin))
 
 	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.projectID))
 	if err != nil {
