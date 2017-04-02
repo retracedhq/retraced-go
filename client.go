@@ -75,10 +75,14 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 }
 
 // GetViewerToken will return a one-time use token that can be used to view a group's audit log.
-func (c *Client) GetViewerToken(groupID string, isAdmin bool) (*ViewerToken, error) {
+func (c *Client) GetViewerToken(groupID string, isAdmin bool, targetID string) (*ViewerToken, error) {
 	params := url.Values{}
 	params.Add("group_id", groupID)
 	params.Add("is_admin", strconv.FormatBool(isAdmin))
+
+	if targetID != "" {
+		params.Add("target_id", targetID)
+	}
 
 	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.projectID))
 	if err != nil {
@@ -100,7 +104,7 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool) (*ViewerToken, err
 	}
 
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK { // There's a pending PR in the retraced API to match this.
 		return nil, fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
 	}
 
