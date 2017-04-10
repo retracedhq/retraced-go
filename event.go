@@ -17,7 +17,7 @@ type Event struct {
 	Action string `json:"action"`
 
 	// Group is the team that will be able to see this event in the audit log
-	Group *Group `json:"group"`
+	Group *Group `json:"group,omitempty"`
 
 	// Created is a timestamp representing when the event took place
 	Created time.Time `json:"created"`
@@ -35,7 +35,7 @@ type Event struct {
 	SourceIP string `json:"source_ip"`
 
 	// Actor represents the entity that performed the action
-	Actor *Actor `json:"actor"`
+	Actor *Actor `json:"actor,omitempty"`
 
 	// Fields are any additional data to store with the event
 	Fields map[string]string `json:"fields,omitempty"`
@@ -50,14 +50,29 @@ type Event struct {
 	apiVersion int
 }
 
+// VerifyHash computes a hash of the sent event, and verifies
+// that it matches the hash we got back from Retraced API
 func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	// Basic sanity check
 	if event.Action == "" {
 		return fmt.Errorf("Missing required field for hash verification: Action")
 	}
-	if event.Group == nil || event.Group.ID == "" {
-		return fmt.Errorf("Missing required field for hash verification: Group.Id")
+
+	hashTarget := event.BuildHashTarget(newEvent)
+
+	hashBytes := sha256.Sum256(hashTarget)
+	result := hex.EncodeToString(hashBytes[:])
+
+	if result != newEvent.Hash {
+		return fmt.Errorf("Hash mismatch: local[%s] != remote[%s]", result, newEvent.Hash)
 	}
+
+	return nil
+}
+
+// BuildHashTarget builds a string that will be used to
+// compute a hash of the event
+func (event *Event) BuildHashTarget(newEvent *NewEventRecord) []byte {
 
 	concat := &bytes.Buffer{}
 	fmt.Fprintf(concat, "%s:", encodePassOne(newEvent.ID))
@@ -75,8 +90,14 @@ func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	}
 	fmt.Fprintf(concat, "%s:", encodePassOne(actorId))
 
-	fmt.Fprintf(concat, "%s:", encodePassOne(event.Group.ID))
+	groupId := ""
+	if event.Group != nil {
+		groupId = event.Group.ID
+	}
+	fmt.Fprintf(concat, "%s:", encodePassOne(groupId))
+
 	fmt.Fprintf(concat, "%s:", encodePassOne(event.SourceIP))
+
 	if event.IsFailure {
 		fmt.Fprint(concat, "1:")
 	} else {
@@ -102,14 +123,7 @@ func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 		fmt.Fprintf(concat, "%s=%s;", encodedKey, encodedValue)
 	}
 
-	hashBytes := sha256.Sum256(concat.Bytes())
-	result := hex.EncodeToString(hashBytes[:])
-
-	if result != newEvent.Hash {
-		return fmt.Errorf("Hash mismatch: local[%s] != remote[%s]", result, newEvent.Hash)
-	}
-
-	return nil
+	return concat.Bytes()
 }
 
 func encodePassOne(in string) string {

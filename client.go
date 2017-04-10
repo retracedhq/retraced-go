@@ -30,6 +30,7 @@ func NewClient(projectID string, apiToken string) (*Client, error) {
 	}, nil
 }
 
+// NewEventRecord is returned from the Retraced API when an event is created
 type NewEventRecord struct {
 	ID   string `json:"id"`
 	Hash string `json:"hash"`
