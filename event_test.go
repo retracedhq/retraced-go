@@ -1,6 +1,10 @@
 package retraced
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestHashMismatch(t *testing.T) {
 	testEvent := &Event{
@@ -52,8 +56,34 @@ func TestHashMatch(t *testing.T) {
 		Hash: "5b570bff4628b35262fb401d2f6c9bb38d29e212f6e0e8ea93445b4e5a253d50",
 	}
 	if err := testEvent.VerifyHash(fakeNew); err != nil {
-		t.Errorf("Hash check should have succeeded")
+		t.Errorf("Hash check should have succeeded %v", err)
 	} else {
 		// pass
 	}
+}
+
+func TestBuildHashNoGroupId(t *testing.T) {
+	testEvent := &Event{
+		Action: "even.more.of.a.test",
+		Actor: &Actor{
+			ID: "user@domain.xyz",
+		},
+		Target: &Target{
+			ID: "some_object01234",
+		},
+		IsAnonymous: false,
+		IsFailure:   true,
+		Fields: map[string]string{
+			"abc=xyz": "nothing special",
+		},
+	}
+
+	fakeNew := &NewEventRecord{
+		ID: "kfbr392",
+	}
+
+	hashTarget := string(testEvent.BuildHashTarget(fakeNew))
+	expected := "kfbr392:even.more.of.a.test:some_object01234:user@domain.xyz:::1:0:abc%3Dxyz=nothing special;"
+
+	assert.New(t).Equal(expected, hashTarget, "Hash targets should be equal")
 }
