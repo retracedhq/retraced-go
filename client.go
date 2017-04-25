@@ -18,15 +18,32 @@ const (
 type Client struct {
 	projectID string
 	token     string
-	Endpoint  string
+	// Endpoint is the retraced api base url, default is `https://api.retraced.io`
+	Endpoint string
+	// Component is an identifier for a specific component of a vendor app platform
+	Component string
+	// SHA is an identifier for the specific version of this component, usually a git SHA
+	SHA string
 }
 
-// NewClient creates a new retraced api client that can be used to send events in
+// NewClient creates a new retraced api client that can be used to send events
 func NewClient(projectID string, apiToken string) (*Client, error) {
 	return &Client{
 		projectID: projectID,
 		token:     apiToken,
 		Endpoint:  "https://api.retraced.io",
+	}, nil
+}
+
+// NewClientWithVersion Same as NewClient, but includes params for specifying the
+// Component and SHA of the Retraced client application
+func NewClientWithVersion(projectID string, apiToken string, component string, sha string) (*Client, error) {
+	return &Client{
+		projectID: projectID,
+		token:     apiToken,
+		Endpoint:  "https://api.retraced.io",
+		Component: component,
+		SHA:       sha,
 	}, nil
 }
 
@@ -39,6 +56,12 @@ type NewEventRecord struct {
 // ReportEvent is the method to call to send a new event.
 func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 	event.apiVersion = apiVersion
+	if event.SHA == "" {
+		event.SHA = c.SHA
+	}
+	if event.Component == "" {
+		event.Component = c.Component
+	}
 
 	encoded, err := json.Marshal(event)
 	if err != nil {
@@ -69,6 +92,10 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 
 	var reqResp NewEventRecord
 	if err := json.Unmarshal(bodyBytes, &reqResp); err != nil {
+		return nil, err
+	}
+
+	if err := event.VerifyHash(&reqResp); err != nil {
 		return nil, err
 	}
 
