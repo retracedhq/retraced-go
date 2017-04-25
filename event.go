@@ -50,9 +50,9 @@ type Event struct {
 	// Component can be set on each Event, or on an instance of retraced.Client
 	Component string `json:"component"`
 
-	// SHA is an identifier for the specific version of this component, usually a git SHA
-	// SHA can be set on each Event, or on an instance of retraced.Client
-	SHA string `json:"sha"`
+	// Version is an identifier for the specific version of this component, usually a git SHA
+	// Version can be set on each Event, or on an instance of retraced.Client
+	Version string `json:"version"`
 
 	// apiVersion is set here to allow updates to this model without breaking the API server
 	apiVersion int

@@ -22,8 +22,8 @@ type Client struct {
 	Endpoint string
 	// Component is an identifier for a specific component of a vendor app platform
 	Component string
-	// SHA is an identifier for the specific version of this component, usually a git SHA
-	SHA string
+	// Version is an identifier for the specific version of this component, usually a git SHA
+	Version string
 }
 
 // NewClient creates a new retraced api client that can be used to send events
@@ -36,14 +36,14 @@ func NewClient(projectID string, apiToken string) (*Client, error) {
 }
 
 // NewClientWithVersion Same as NewClient, but includes params for specifying the
-// Component and SHA of the Retraced client application
-func NewClientWithVersion(projectID string, apiToken string, component string, sha string) (*Client, error) {
+// Component and Version of the Retraced client application
+func NewClientWithVersion(projectID string, apiToken string, component string, version string) (*Client, error) {
 	return &Client{
 		projectID: projectID,
 		token:     apiToken,
 		Endpoint:  "https://api.retraced.io",
 		Component: component,
-		SHA:       sha,
+		Version:   version,
 	}, nil
 }
 
@@ -56,8 +56,8 @@ type NewEventRecord struct {
 // ReportEvent is the method to call to send a new event.
 func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 	event.apiVersion = apiVersion
-	if event.SHA == "" {
-		event.SHA = c.SHA
+	if event.Version == "" {
+		event.Version = c.Version
 	}
 	if event.Component == "" {
 		event.Component = c.Component
