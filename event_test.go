@@ -62,6 +62,34 @@ func TestHashMatch(t *testing.T) {
 	}
 }
 
+func TestHashMatchChannelList(t *testing.T) {
+	testEvent := &Event{
+		Action: "channel.list",
+		Group: &Group{
+			ID: "602f21a3fbd3f92302133762808b39af",
+		},
+		Actor: &Actor{
+			ID: "060dbbd5da8c43b57b26179a3bfb7b1a",
+		},
+		Target: &Target{
+			ID: "6da2ecf53d388e107df6e4dbb061b165",
+		},
+		SourceIP:    "172.19.0.1",
+		IsAnonymous: false,
+		IsFailure:   false,
+	}
+
+	fakeNew := &NewEventRecord{
+		ID:   "f59b236a449d43a5b27c8322aadc0503",
+		Hash: "2224989b8d83d4b23920f0136f8e3b11ce034d9e0b610ee97c1c198350838a9e",
+	}
+
+	hashTarget := string(testEvent.BuildHashTarget(fakeNew))
+	expected := "f59b236a449d43a5b27c8322aadc0503:channel.list:6da2ecf53d388e107df6e4dbb061b165:060dbbd5da8c43b57b26179a3bfb7b1a:602f21a3fbd3f92302133762808b39af:172.19.0.1:0:0::"
+
+	assert.New(t).Equal(expected, hashTarget, "Hash targets should be equal")
+}
+
 func TestBuildHashNoGroupId(t *testing.T) {
 	testEvent := &Event{
 		Action: "even.more.of.a.test",

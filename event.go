@@ -117,18 +117,22 @@ func (event *Event) BuildHashTarget(newEvent *NewEventRecord) []byte {
 		fmt.Fprint(concat, "0:")
 	}
 
-	allKeys := []string{}
-	for k := range event.Fields {
-		allKeys = append(allKeys, k)
-	}
-	sort.Strings(allKeys)
-	for i := 0; i < len(allKeys); i++ {
-		k := allKeys[i]
-		v := event.Fields[k]
+	if len(event.Fields) == 0 {
+		fmt.Fprintf(concat, ":")
+	} else {
+		allKeys := []string{}
+		for k := range event.Fields {
+			allKeys = append(allKeys, k)
+		}
+		sort.Strings(allKeys)
+		for i := 0; i < len(allKeys); i++ {
+			k := allKeys[i]
+			v := event.Fields[k]
 
-		encodedKey := encodePassTwo(encodePassOne(k))
-		encodedValue := encodePassTwo(encodePassOne(v))
-		fmt.Fprintf(concat, "%s=%s;", encodedKey, encodedValue)
+			encodedKey := encodePassTwo(encodePassOne(k))
+			encodedValue := encodePassTwo(encodePassOne(v))
+			fmt.Fprintf(concat, "%s=%s;", encodedKey, encodedValue)
+		}
 	}
 
 	return concat.Bytes()
