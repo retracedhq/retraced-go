@@ -46,6 +46,14 @@ type Event struct {
 	// IsAnonymous is an optional flag that, when set, indicates that this is an anonymous event
 	IsAnonymous bool `json:"is_anonymous"`
 
+	// Component is an identifier for a specific component of a vendor app platform
+	// Component can be set on each Event, or on an instance of retraced.Client
+	Component string `json:"component"`
+
+	// SHA is an identifier for the specific version of this component, usually a git SHA
+	// SHA can be set on each Event, or on an instance of retraced.Client
+	SHA string `json:"sha"`
+
 	// apiVersion is set here to allow updates to this model without breaking the API server
 	apiVersion int
 }
