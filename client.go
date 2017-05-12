@@ -24,6 +24,8 @@ type Client struct {
 	Component string
 	// Version is an identifier for the specific version of this component, usually a git SHA
 	Version string
+	// ViewLogAction is the action logged when a Viewer Token is used, default is 'audit.log.view'
+	ViewLogAction string
 }
 
 // NewClient creates a new retraced api client that can be used to send events
@@ -107,6 +109,7 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, targetID string) (
 	params := url.Values{}
 	params.Add("group_id", groupID)
 	params.Add("is_admin", strconv.FormatBool(isAdmin))
+	params.Add("view_log_action", c.ViewLogAction)
 
 	if targetID != "" {
 		params.Add("target_id", targetID)
