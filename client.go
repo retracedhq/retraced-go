@@ -69,7 +69,7 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/v1/project/%s/event", c.Endpoint, c.projectID), bytes.NewBuffer(encoded))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/publisher/v1/project/%s/event", c.Endpoint, c.projectID), bytes.NewBuffer(encoded))
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, targetID string) (
 		params.Add("target_id", targetID)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("%s/v1/project/%s/viewertoken", c.Endpoint, c.projectID))
+	u, err := url.Parse(fmt.Sprintf("%s/publisher/v1/project/%s/viewertoken", c.Endpoint, c.projectID))
 	if err != nil {
 		return nil, err
 	}
