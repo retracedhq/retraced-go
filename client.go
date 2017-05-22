@@ -105,11 +105,11 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 }
 
 // GetViewerToken will return a one-time use token that can be used to view a group's audit log.
-func (c *Client) GetViewerToken(groupID string, isAdmin bool, displayName string, targetID string) (*ViewerToken, error) {
+func (c *Client) GetViewerToken(groupID string, isAdmin bool, actorID string, targetID string) (*ViewerToken, error) {
 	params := url.Values{}
 	params.Add("group_id", groupID)
 	params.Add("is_admin", strconv.FormatBool(isAdmin))
-	params.Add("display_name", displayName)
+	params.Add("actor_id", actorID)
 	params.Add("view_log_action", c.ViewLogAction)
 
 	if targetID != "" {
