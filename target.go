@@ -15,5 +15,5 @@ type Target struct {
 	Href string `json:"href"`
 
 	// Fields can store any additional data on the target
-	Fields map[string]string `json:"fields,omitempty"`
+	Fields Fields `json:"fields,omitempty"`
 }

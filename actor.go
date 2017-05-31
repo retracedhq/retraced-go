@@ -12,5 +12,5 @@ type Actor struct {
 	Href string `json:"href"`
 
 	// Fields are any additional data to store with the actor
-	Fields map[string]string `json:"fields,omitempty"`
+	Fields Fields `json:"fields,omitempty"`
 }
