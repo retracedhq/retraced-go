@@ -38,7 +38,7 @@ type Event struct {
 	Actor *Actor `json:"actor,omitempty"`
 
 	// Fields are any additional data to store with the event
-	Fields map[string]string `json:"fields,omitempty"`
+	Fields Fields `json:"fields,omitempty"`
 
 	// IsFailure is an optional flag that, when set, indicates that this audited event is a failed use of privileges
 	IsFailure bool `json:"is_failure"`
