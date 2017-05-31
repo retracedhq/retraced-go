@@ -8,9 +8,9 @@ type Actor struct {
 	// Name is the display name for this actor. It can be email
 	Name string `json:"name"`
 
-	// Type represents the type of actor. This is often "user" or "token"
-	Type string `json:"type"`
+	// Href represents a URL to the actor
+	Href string `json:"href"`
 
-	// URL represents a URL to the actor
-	URL string `json:"url"`
+	// Fields are any additional data to store with the actor
+	Fields map[string]string `json:"fields,omitempty"`
 }

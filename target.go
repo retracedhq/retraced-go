@@ -11,9 +11,9 @@ type Target struct {
 	// Type describes the type of target
 	Type string `json:"type"`
 
-	// URL is a reference to the target
-	URL string `json:"url"`
+	// Href is a reference to the target
+	Href string `json:"href"`
 
 	// Fields can store any additional data on the target
-	Fields map[string]interface{} `json:"fields,omitempty"`
+	Fields map[string]string `json:"fields,omitempty"`
 }
