@@ -33,9 +33,9 @@ type Client struct {
 // NewClient creates a new retraced api client that can be used to send events
 func NewClient(projectID string, apiToken string) (*Client, error) {
 	return &Client{
-		projectID: projectID,
-		token:     apiToken,
-		Endpoint:  "https://api.retraced.io",
+		projectID:  projectID,
+		token:      apiToken,
+		Endpoint:   "https://api.retraced.io",
 		HttpClient: http.DefaultClient,
 	}, nil
 }
@@ -44,11 +44,11 @@ func NewClient(projectID string, apiToken string) (*Client, error) {
 // Component and Version of the Retraced client application
 func NewClientWithVersion(projectID string, apiToken string, component string, version string) (*Client, error) {
 	return &Client{
-		projectID: projectID,
-		token:     apiToken,
-		Endpoint:  "https://api.retraced.io",
-		Component: component,
-		Version:   version,
+		projectID:  projectID,
+		token:      apiToken,
+		Endpoint:   "https://api.retraced.io",
+		Component:  component,
+		Version:    version,
 		HttpClient: http.DefaultClient,
 	}, nil
 }
@@ -166,6 +166,7 @@ func (c *Client) Query(sq *StructuredQuery, mask *EventNodeMask, pageSize int) (
 		structuredQuery: sq,
 		mask:            mask,
 		pageSize:        pageSize,
+		httpClient:      c.HttpClient,
 	}
 
 	err := ec.call()
