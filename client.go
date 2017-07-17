@@ -26,6 +26,8 @@ type Client struct {
 	Version string
 	// ViewLogAction is the action logged when a Viewer Token is used, default is 'audit.log.view'
 	ViewLogAction string
+	//
+	HttpClient *http.Client
 }
 
 // NewClient creates a new retraced api client that can be used to send events
@@ -34,6 +36,7 @@ func NewClient(projectID string, apiToken string) (*Client, error) {
 		projectID: projectID,
 		token:     apiToken,
 		Endpoint:  "https://api.retraced.io",
+		HttpClient: http.DefaultClient,
 	}, nil
 }
 
@@ -46,6 +49,7 @@ func NewClientWithVersion(projectID string, apiToken string, component string, v
 		Endpoint:  "https://api.retraced.io",
 		Component: component,
 		Version:   version,
+		HttpClient: http.DefaultClient,
 	}, nil
 }
 
@@ -77,7 +81,7 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.token))
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +134,7 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, actorID string, ta
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.token))
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
