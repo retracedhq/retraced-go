@@ -327,6 +327,8 @@ type EventsConnection struct {
 	cursors         []string
 	pageSize        int
 
+	httpClient *http.Client
+
 	// If this connection's mask specifies fields in a nested struct, then
 	// that struct will be non-nil for results. For example, if the mask
 	// specifies GroupID, then Group will be non-nil even on events reported
@@ -375,7 +377,7 @@ func (e *EventsConnection) call() error {
 	req.Header.Set("Authorization", e.authorization)
 	req.Header.Set("Accept", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := e.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
