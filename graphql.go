@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -282,6 +283,244 @@ func (mask *EventNodeMask) SearchOpQuery() (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+// CSVHeaders generates a row of header fields
+func (mask *EventNodeMask) CSVHeaders() []string {
+	var headers []string
+
+	if mask.ID {
+		headers = append(headers, "id")
+	}
+	if mask.Action {
+		headers = append(headers, "action")
+	}
+	if mask.CRUD {
+		headers = append(headers, "crud")
+	}
+	if mask.Description {
+		headers = append(headers, "description")
+	}
+	if mask.IsFailure {
+		headers = append(headers, "is_failure")
+	}
+	if mask.IsAnonymous {
+		headers = append(headers, "is_anonymous")
+	}
+	if mask.SourceIP {
+		headers = append(headers, "source_ip")
+	}
+	if mask.Country {
+		headers = append(headers, "country")
+	}
+	if mask.LocSubdiv1 {
+		headers = append(headers, "loc_subdiv1")
+	}
+	if mask.LocSubdiv2 {
+		headers = append(headers, "loc_subdiv2")
+	}
+	if mask.Received {
+		headers = append(headers, "received")
+	}
+	if mask.Created {
+		headers = append(headers, "created")
+	}
+	if mask.CanonicalTime {
+		headers = append(headers, "canonical_time")
+	}
+	if mask.Component {
+		headers = append(headers, "component")
+	}
+	if mask.Version {
+		headers = append(headers, "version")
+	}
+	if mask.Fields {
+		headers = append(headers, "fields")
+	}
+	if mask.Raw {
+		headers = append(headers, "raw")
+	}
+	if mask.GroupID {
+		headers = append(headers, "group_id")
+	}
+	if mask.GroupName {
+		headers = append(headers, "group_name")
+	}
+	if mask.ActorID {
+		headers = append(headers, "actor_id")
+	}
+	if mask.ActorName {
+		headers = append(headers, "actor_name")
+	}
+	if mask.ActorHref {
+		headers = append(headers, "actor_href")
+	}
+	if mask.ActorFields {
+		headers = append(headers, "actor_fields")
+	}
+	if mask.TargetID {
+		headers = append(headers, "target_id")
+	}
+	if mask.TargetName {
+		headers = append(headers, "target_name")
+	}
+	if mask.TargetHref {
+		headers = append(headers, "target_href")
+	}
+	if mask.TargetType {
+		headers = append(headers, "target_type")
+	}
+	if mask.TargetFields {
+		headers = append(headers, "target_fields")
+	}
+	if mask.DisplayMarkdown {
+		headers = append(headers, "display_markdown")
+	}
+
+	return headers
+}
+
+// CSVRow formats an event as a csv row
+func (mask *EventNodeMask) CSVRow(e *EventNode) []string {
+	var fields []string
+
+	if mask.ID {
+		fields = append(fields, e.ID)
+	}
+	if mask.Action {
+		fields = append(fields, e.Action)
+	}
+	if mask.CRUD {
+		fields = append(fields, e.CRUD)
+	}
+	if mask.Description {
+		fields = append(fields, e.Description)
+	}
+	if mask.IsFailure {
+		fields = append(fields, strconv.FormatBool(e.IsFailure))
+	}
+	if mask.IsAnonymous {
+		fields = append(fields, strconv.FormatBool(e.IsAnonymous))
+	}
+	if mask.SourceIP {
+		fields = append(fields, e.SourceIP)
+	}
+	if mask.Country {
+		fields = append(fields, e.Country)
+	}
+	if mask.LocSubdiv1 {
+		fields = append(fields, e.LocSubdiv1)
+	}
+	if mask.LocSubdiv2 {
+		fields = append(fields, e.LocSubdiv2)
+	}
+	if mask.Received {
+		fields = append(fields, e.Received.Format(time.RFC3339))
+	}
+	if mask.Created {
+		fields = append(fields, e.Created.Format(time.RFC3339))
+	}
+	if mask.CanonicalTime {
+		fields = append(fields, e.CanonicalTime.Format(time.RFC3339))
+	}
+	if mask.Component {
+		fields = append(fields, e.Component)
+	}
+	if mask.Version {
+		fields = append(fields, e.Version)
+	}
+	if mask.Fields {
+		fields = append(fields, e.Fields.String())
+	}
+	if mask.Raw {
+		fields = append(fields, e.Raw)
+	}
+	if mask.GroupID {
+		var groupID string
+		if e.Group != nil {
+			groupID = e.Group.ID
+		}
+		fields = append(fields, groupID)
+	}
+	if mask.GroupName {
+		var groupName string
+		if e.Group != nil {
+			groupName = e.Group.Name
+		}
+		fields = append(fields, groupName)
+	}
+	if mask.ActorID {
+		var actorID string
+		if e.Actor != nil {
+			actorID = e.Actor.ID
+		}
+		fields = append(fields, actorID)
+	}
+	if mask.ActorName {
+		var actorName string
+		if e.Actor != nil {
+			actorName = e.Actor.Name
+		}
+		fields = append(fields, actorName)
+	}
+	if mask.ActorHref {
+		var actorHref string
+		if e.Actor != nil {
+			actorHref = e.Actor.Href
+		}
+		fields = append(fields, actorHref)
+	}
+	if mask.ActorFields {
+		var actorFields string
+		if e.Actor != nil {
+			actorFields = e.Actor.Fields.String()
+		}
+		fields = append(fields, actorFields)
+	}
+	if mask.TargetID {
+		var targetID string
+		if e.Target != nil {
+			targetID = e.Target.ID
+		}
+		fields = append(fields, targetID)
+	}
+	if mask.TargetName {
+		var targetName string
+		if e.Target != nil {
+			targetName = e.Target.Name
+		}
+		fields = append(fields, targetName)
+	}
+	if mask.TargetHref {
+		var targetHref string
+		if e.Target != nil {
+			targetHref = e.Target.Href
+		}
+		fields = append(fields, targetHref)
+	}
+	if mask.TargetType {
+		var targetType string
+		if e.Target != nil {
+			targetType = e.Target.Type
+		}
+		fields = append(fields, targetType)
+	}
+	if mask.TargetFields {
+		var targetFields string
+		if e.Target != nil {
+			targetFields = e.Target.Fields.String()
+		}
+		fields = append(fields, targetFields)
+	}
+	if mask.DisplayMarkdown {
+		var displayMarkdown string
+		if e.Display != nil {
+			displayMarkdown = e.Display.Markdown
+		}
+		fields = append(fields, displayMarkdown)
+	}
+
+	return fields
 }
 
 type graphQLSearchVariables struct {
