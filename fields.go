@@ -3,6 +3,7 @@ package retraced
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 type Fields map[string]string
@@ -24,4 +25,14 @@ func (fields *Fields) UnmarshalJSON(data []byte) error {
 	}
 
 	return nil
+}
+
+// json without chance of error
+func (fields Fields) String() string {
+	var s []string
+	for k, v := range fields {
+		s = append(s, fmt.Sprintf("%q:%q", k, v))
+	}
+
+	return fmt.Sprintf("{%s}", strings.Join(s, ","))
 }
