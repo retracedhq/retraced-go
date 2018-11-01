@@ -158,7 +158,7 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, actorID string, ta
 }
 
 // Query searches for events using the Publisher API's GraphQL endpoint.
-func (c *Client) Query(sq *StructuredQuery, mask *EventNodeMask, pageSize int) (*EventsConnection, error) {
+func (c *Client) Query(sq *StructuredQuery, mask *EventNodeMask, pageSize int) (EventsPager, error) {
 	url := fmt.Sprintf("%s/publisher/v1/project/%s/graphql", c.Endpoint, c.projectID)
 	ec := &EventsConnection{
 		url:             url,
