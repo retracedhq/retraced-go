@@ -80,14 +80,14 @@ func TestClientQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Len(t, eventsConn.CurrentResults, 3)
-	assert.Equal(t, 10, eventsConn.TotalCount)
+	assert.Len(t, eventsConn.CurrentResults(), 3)
+	assert.Equal(t, 10, eventsConn.TotalCount())
 	assert.True(t, eventsConn.HasNextPage())
 	assert.False(t, eventsConn.HasPreviousPage())
-	assert.Equal(t, 1, eventsConn.CurrentPageNumber)
+	assert.Equal(t, 1, eventsConn.CurrentPageNumber())
 	assert.Equal(t, 4, eventsConn.TotalPages())
 
-	for _, node := range eventsConn.CurrentResults {
+	for _, node := range eventsConn.CurrentResults() {
 		assert.NotEmpty(t, node.ID)
 		assert.Equal(t, "go.test", node.Action)
 		assert.NotEmpty(t, node.Group.ID)
@@ -119,8 +119,8 @@ func TestClientQuery(t *testing.T) {
 	assert.NoError(t, eventsConn.NextPage())
 	assert.NoError(t, eventsConn.NextPage())
 
-	assert.Equal(t, 10, eventsConn.TotalCount)
-	assert.Equal(t, 4, eventsConn.CurrentPageNumber)
+	assert.Equal(t, 10, eventsConn.TotalCount())
+	assert.Equal(t, 4, eventsConn.CurrentPageNumber())
 	assert.Equal(t, 4, eventsConn.TotalPages())
 	assert.True(t, eventsConn.HasPreviousPage())
 	assert.False(t, eventsConn.HasNextPage())

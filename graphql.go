@@ -572,51 +572,83 @@ type EventsConnection struct {
 	// that struct will be non-nil for results. For example, if the mask
 	// specifies GroupID, then Group will be non-nil even on events reported
 	// without a group ID.
-	CurrentResults []*EventNode
-	TotalCount     int
+	currentResults []*EventNode
+	totalCount     int
 	// 1-indexed
-	CurrentPageNumber int
+	currentPageNumber int
+}
+
+func (ec *EventsConnection) NextPage() error {
+	return ec.call()
+}
+
+func (ec *EventsConnection) TotalPages() int {
+	pages := ec.totalCount / ec.pageSize
+	if ec.totalCount%ec.pageSize != 0 {
+		pages++
+	}
+	return pages
+}
+
+func (ec *EventsConnection) HasNextPage() bool {
+	return ec.currentPageNumber < ec.TotalPages()
+}
+
+func (ec *EventsConnection) HasPreviousPage() bool {
+	return ec.currentPageNumber > 1
+}
+
+func (ec *EventsConnection) CurrentPageNumber() int {
+	return ec.currentPageNumber
+}
+
+func (ec *EventsConnection) CurrentResults() []*EventNode {
+	return ec.currentResults
+}
+
+func (ec *EventsConnection) TotalCount() int {
+	return ec.totalCount
 }
 
 // cursor returns the last item in EventsConnection.cursors
-func (e *EventsConnection) cursor() string {
-	n := len(e.cursors)
+func (ec *EventsConnection) cursor() string {
+	n := len(ec.cursors)
 	if n == 0 {
-		e.cursors = []string{""}
+		ec.cursors = []string{""}
 		n = 1
 	}
-	return e.cursors[n-1]
+	return ec.cursors[n-1]
 }
 
-func (e *EventsConnection) call() error {
-	graphQLQuery, err := e.mask.SearchOpQuery()
+func (ec *EventsConnection) call() error {
+	graphQLQuery, err := ec.mask.SearchOpQuery()
 	if err != nil {
 		return err
 	}
 	eventQuery := ""
-	if e.structuredQuery != nil {
-		eventQuery = e.structuredQuery.String()
+	if ec.structuredQuery != nil {
+		eventQuery = ec.structuredQuery.String()
 	}
 	encoded, err := json.Marshal(&graphQLSearchBody{
 		Query: graphQLQuery,
 		Variables: &graphQLSearchVariables{
-			Last:   e.pageSize,
-			Before: e.cursor(),
+			Last:   ec.pageSize,
+			Before: ec.cursor(),
 			Query:  eventQuery,
 		},
 	})
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("POST", e.url, bytes.NewBuffer(encoded))
+	req, err := http.NewRequest("POST", ec.url, bytes.NewBuffer(encoded))
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", e.authorization)
+	req.Header.Set("Authorization", ec.authorization)
 	req.Header.Set("Accept", "application/json")
 
-	resp, err := e.httpClient.Do(req)
+	resp, err := ec.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -634,52 +666,32 @@ func (e *EventsConnection) call() error {
 		return err
 	}
 
-	e.TotalCount = root.Data.Search.TotalCount
-	e.CurrentPageNumber = len(e.cursors)
+	ec.totalCount = root.Data.Search.TotalCount
+	ec.currentPageNumber = len(ec.cursors)
 
 	hits := len(root.Data.Search.Edges)
 	events := make([]*EventNode, 0, hits)
 	for i, edge := range root.Data.Search.Edges {
 		event := edge.Node
-		if e.mask.AnyGroup() && event.Group == nil {
+		if ec.mask.AnyGroup() && event.Group == nil {
 			event.Group = &Group{}
 		}
-		if e.mask.AnyActor() && event.Actor == nil {
+		if ec.mask.AnyActor() && event.Actor == nil {
 			event.Actor = &Actor{}
 		}
-		if e.mask.AnyTarget() && event.Target == nil {
+		if ec.mask.AnyTarget() && event.Target == nil {
 			event.Target = &Target{}
 		}
-		if e.mask.AnyDisplay() && event.Display == nil {
+		if ec.mask.AnyDisplay() && event.Display == nil {
 			event.Display = &Display{}
 		}
 		events = append(events, edge.Node)
 
 		if root.Data.Search.PageInfo.HasPreviousPage && i == hits-1 {
-			e.cursors = append(e.cursors, edge.Cursor)
+			ec.cursors = append(ec.cursors, edge.Cursor)
 		}
 	}
-	e.CurrentResults = events
+	ec.currentResults = events
 
 	return nil
-}
-
-func (ec *EventsConnection) NextPage() error {
-	return ec.call()
-}
-
-func (ec *EventsConnection) TotalPages() int {
-	pages := ec.TotalCount / ec.pageSize
-	if ec.TotalCount%ec.pageSize != 0 {
-		pages++
-	}
-	return pages
-}
-
-func (ec *EventsConnection) HasNextPage() bool {
-	return ec.CurrentPageNumber < ec.TotalPages()
-}
-
-func (ec *EventsConnection) HasPreviousPage() bool {
-	return ec.CurrentPageNumber > 1
 }
