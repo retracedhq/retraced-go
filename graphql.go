@@ -657,7 +657,7 @@ func (ec *EventsConnection) call() error {
 		if body, err := ioutil.ReadAll(resp.Body); err == nil {
 			log.Printf("GraphQL error response: %s", body)
 		}
-		return fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
+		return fmt.Errorf("Unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
 	}
 
 	root := &graphQLSearchRoot{}
