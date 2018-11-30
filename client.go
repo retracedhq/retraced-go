@@ -88,7 +88,7 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
+		return nil, fmt.Errorf("Unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
 	}
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
@@ -141,7 +141,7 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, actorID string, ta
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK { // There's a pending PR in the retraced API to match this.
-		return nil, fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
+		return nil, fmt.Errorf("Unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
 	}
 
 	contents, err := ioutil.ReadAll(resp.Body)
