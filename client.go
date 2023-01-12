@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	apiVersion = 2
+	apiVersion      = 2
+	defaultEndpoint = "http://localhost:3000/auditlog"
 )
 
 // Client represents a client that can send events into the retraced service.
@@ -31,22 +32,32 @@ type Client struct {
 }
 
 // NewClient creates a new retraced api client that can be used to send events
-func NewClient(projectID string, apiToken string) (*Client, error) {
+func NewClient(endpoint string, projectID string, apiToken string) (*Client, error) {
+	ep := defaultEndpoint
+	if endpoint != "" {
+		ep = endpoint
+	}
+
 	return &Client{
 		projectID:  projectID,
 		token:      apiToken,
-		Endpoint:   "https://api.retraced.io",
+		Endpoint:   ep,
 		HttpClient: http.DefaultClient,
 	}, nil
 }
 
 // NewClientWithVersion Same as NewClient, but includes params for specifying the
 // Component and Version of the Retraced client application
-func NewClientWithVersion(projectID string, apiToken string, component string, version string) (*Client, error) {
+func NewClientWithVersion(endpoint string, projectID string, apiToken string, component string, version string) (*Client, error) {
+	ep := defaultEndpoint
+	if endpoint != "" {
+		ep = endpoint
+	}
+
 	return &Client{
 		projectID:  projectID,
 		token:      apiToken,
-		Endpoint:   "https://api.retraced.io",
+		Endpoint:   ep,
 		Component:  component,
 		Version:    version,
 		HttpClient: http.DefaultClient,

@@ -42,12 +42,20 @@ func fakeEvent() *retraced.Event {
 	}
 }
 
-func TestClientQuery(t *testing.T) {
-	projectID := os.Getenv("PROJECT_ID")
-	token := os.Getenv("PUBLISHER_API_KEY")
-	apiEndpoint := os.Getenv("PUBLISHER_API_ENDPOINT")
+func getDefault(env, def string) string {
+	if os.Getenv(env) == "" {
+		return def
+	}
 
-	client, err := retraced.NewClient(projectID, token)
+	return os.Getenv(env)
+}
+
+func TestClientQuery(t *testing.T) {
+	projectID := getDefault("PROJECT_ID", "dev")
+	token := getDefault("PUBLISHER_API_KEY", "dev")
+	apiEndpoint := getDefault("PUBLISHER_API_ENDPOINT", "http://localhost:3000/auditlog")
+
+	client, err := retraced.NewClient("", projectID, token)
 	if err != nil {
 		t.Fatal(err)
 	}
