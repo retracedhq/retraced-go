@@ -1,7 +1,21 @@
-### Tests
+### Local development
 
-Install the dependencies to run the tests:
+## Install the dependencies to run the tests
+
 ```
-go get -u github.com/satori/go.uuid
-go get -u github.com/stretchr/testify/assert
+go get
+```
+
+## Run tests
+
+```
+go test -v
+```
+
+## Run SDK client test
+
+Ensure you are running Retraced, then run:
+
+```
+go test -timeout 30s -run ^TestClientQuery$ github.com/retracedhq/retraced-go/tests -count=1
 ```
