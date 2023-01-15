@@ -1,4 +1,8 @@
-### Local development
+## Usage
+
+Refer to our [docs](https://boxyhq.com/docs/retraced/sdks/golang) for details on the usage of this SDK.
+
+## Local development
 
 ## Install the dependencies to run the tests
 
