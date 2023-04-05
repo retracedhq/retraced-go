@@ -39,6 +39,8 @@ func fakeEvent() *retraced.Event {
 		IsAnonymous: false,
 		Component:   "Go SDK",
 		Version:     "v1",
+		ExternalID: "external_id",
+		Metadata: retraced.Fields{"foo": "bar"},
 	}
 }
 
@@ -82,6 +84,8 @@ func TestClientQuery(t *testing.T) {
 		CRUD:        true,
 		Fields:      true,
 		ActorFields: true,
+		ExternalID:  true,
+		Metadata:    true,
 	}
 	eventsConn, err := client.Query(sq, mask, 3)
 	if err != nil {
@@ -104,6 +108,8 @@ func TestClientQuery(t *testing.T) {
 		assert.Equal(t, "e1", node.Fields["x"])
 		assert.Equal(t, "e2", node.Fields["y"])
 		assert.Equal(t, "a3", node.Actor.Fields["z"])
+		assert.Equal(t, "external_id", node.ExternalID)
+		assert.Equal(t, "bar", node.Metadata["foo"])
 
 		assert.Nil(t, node.Target)
 		assert.Nil(t, node.Display)

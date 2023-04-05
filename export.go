@@ -61,6 +61,4 @@ func (c *Client) ExportCSV(ctx context.Context, w io.Writer, sq *StructuredQuery
 			return nil
 		}
 	}
-
-	return nil
 }

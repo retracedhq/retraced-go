@@ -56,6 +56,10 @@ type Event struct {
 
 	// apiVersion is set here to allow updates to this model without breaking the API server
 	apiVersion int
+
+	ExternalID string `json:"external_id,omitempty"`
+
+	Metadata Fields `json:"metadata,omitempty"`
 }
 
 // VerifyHash computes a hash of the sent event, and verifies
@@ -63,7 +67,7 @@ type Event struct {
 func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	// Basic sanity check
 	if event.Action == "" {
-		return fmt.Errorf("Missing required field for hash verification: Action")
+		return fmt.Errorf("missing required field for hash verification: Action")
 	}
 
 	hashTarget := event.BuildHashTarget(newEvent)
@@ -72,7 +76,7 @@ func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	result := hex.EncodeToString(hashBytes[:])
 
 	if result != newEvent.Hash {
-		return fmt.Errorf("Hash mismatch: local[%s] != remote[%s]", result, newEvent.Hash)
+		return fmt.Errorf("hash mismatch: local[%s] != remote[%s]", result, newEvent.Hash)
 	}
 
 	return nil
@@ -128,6 +132,27 @@ func (event *Event) BuildHashTarget(newEvent *NewEventRecord) []byte {
 		for i := 0; i < len(allKeys); i++ {
 			k := allKeys[i]
 			v := event.Fields[k]
+
+			encodedKey := encodePassTwo(encodePassOne(k))
+			encodedValue := encodePassTwo(encodePassOne(v))
+			fmt.Fprintf(concat, "%s=%s;", encodedKey, encodedValue)
+		}
+	}
+
+	if event.ExternalID != "" {
+		fmt.Fprintf(concat, ":%s", encodePassOne(event.ExternalID))
+	}
+
+	if len(event.Metadata) > 0 {
+		fmt.Fprintf(concat, ":")
+		allKeys := []string{}
+		for k := range event.Metadata {
+			allKeys = append(allKeys, k)
+		}
+		sort.Strings(allKeys)
+		for i := 0; i < len(allKeys); i++ {
+			k := allKeys[i]
+			v := event.Metadata[k]
 
 			encodedKey := encodePassTwo(encodePassOne(k))
 			encodedValue := encodePassTwo(encodePassOne(v))

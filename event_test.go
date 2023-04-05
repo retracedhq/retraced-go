@@ -57,8 +57,6 @@ func TestHashMatch(t *testing.T) {
 	}
 	if err := testEvent.VerifyHash(fakeNew); err != nil {
 		t.Errorf("Hash check should have succeeded %v", err)
-	} else {
-		// pass
 	}
 }
 

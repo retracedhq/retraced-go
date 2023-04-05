@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -149,6 +149,10 @@ type EventNode struct {
 
 	// Raw is the json of the original reported event.
 	Raw string `json:"raw"`
+
+	ExternalID string `json:"external_id"`
+
+	Metadata Fields `json:"metadata"`
 }
 
 // https://preview.retraced.io/documentation/advanced-retraced/display-templates/
@@ -175,6 +179,8 @@ type EventNodeMask struct {
 	Version       bool
 	Fields        bool
 	Raw           bool
+	ExternalID    bool
+	Metadata 			bool
 
 	GroupID   bool
 	GroupName bool
@@ -239,6 +245,11 @@ var searchTmplSource = `query Search($query: String!, $last: Int, $before: Strin
 				{{if .Version -}}	version		{{- end}}
 				{{if .Raw -}}		raw		{{- end}}
 				{{if .Fields -}}	fields {
+								key
+								value
+							}		{{- end}}
+				{{if .ExternalID -}}	external_id		{{- end}}
+				{{if .Metadata -}}  metadata {
 								key
 								value
 							}		{{- end}}
@@ -340,6 +351,12 @@ func (mask *EventNodeMask) CSVHeaders() []string {
 	if mask.Raw {
 		headers = append(headers, "raw")
 	}
+	if mask.ExternalID {
+		headers = append(headers, "external_id")
+	}
+	if mask.Metadata {
+		headers = append(headers, "metadata")
+	}
 	if mask.GroupID {
 		headers = append(headers, "group_id")
 	}
@@ -434,6 +451,12 @@ func (mask *EventNodeMask) CSVRow(e *EventNode) []string {
 	}
 	if mask.Raw {
 		fields = append(fields, e.Raw)
+	}
+	if mask.ExternalID {
+		fields = append(fields, e.ExternalID)
+	}
+	if mask.Metadata {
+		fields = append(fields, e.Metadata.String())
 	}
 	if mask.GroupID {
 		var groupID string
@@ -654,10 +677,10 @@ func (ec *EventsConnection) call() error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		if body, err := ioutil.ReadAll(resp.Body); err == nil {
+		if body, err := io.ReadAll(resp.Body); err == nil {
 			log.Printf("GraphQL error response: %s", body)
 		}
-		return fmt.Errorf("Unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
+		return fmt.Errorf("unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
 	}
 
 	root := &graphQLSearchRoot{}
