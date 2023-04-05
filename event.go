@@ -139,6 +139,27 @@ func (event *Event) BuildHashTarget(newEvent *NewEventRecord) []byte {
 		}
 	}
 
+	if event.ExternalID != "" {
+		fmt.Fprintf(concat, ":%s", encodePassOne(event.ExternalID))
+	}
+
+	if len(event.Metadata) > 0 {
+		fmt.Fprintf(concat, ":")
+		allKeys := []string{}
+		for k := range event.Metadata {
+			allKeys = append(allKeys, k)
+		}
+		sort.Strings(allKeys)
+		for i := 0; i < len(allKeys); i++ {
+			k := allKeys[i]
+			v := event.Metadata[k]
+
+			encodedKey := encodePassTwo(encodePassOne(k))
+			encodedValue := encodePassTwo(encodePassOne(v))
+			fmt.Fprintf(concat, "%s=%s;", encodedKey, encodedValue)
+		}
+	}
+
 	return concat.Bytes()
 }
 
