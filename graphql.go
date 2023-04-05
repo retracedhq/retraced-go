@@ -149,6 +149,10 @@ type EventNode struct {
 
 	// Raw is the json of the original reported event.
 	Raw string `json:"raw"`
+
+	ExternalID string `json:"external_id"`
+
+	Metadata Fields `json:"metadata"`
 }
 
 // https://preview.retraced.io/documentation/advanced-retraced/display-templates/
@@ -175,6 +179,8 @@ type EventNodeMask struct {
 	Version       bool
 	Fields        bool
 	Raw           bool
+	ExternalID    bool
+	Metadata 			bool
 
 	GroupID   bool
 	GroupName bool
@@ -434,6 +440,12 @@ func (mask *EventNodeMask) CSVRow(e *EventNode) []string {
 	}
 	if mask.Raw {
 		fields = append(fields, e.Raw)
+	}
+	if mask.ExternalID {
+		fields = append(fields, e.ExternalID)
+	}
+	if mask.Metadata {
+		fields = append(fields, e.Metadata.String())
 	}
 	if mask.GroupID {
 		var groupID string

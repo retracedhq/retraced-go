@@ -56,6 +56,10 @@ type Event struct {
 
 	// apiVersion is set here to allow updates to this model without breaking the API server
 	apiVersion int
+
+	ExternalID string `json:"external_id,omitempty"`
+
+	Metadata Fields `json:"metadata,omitempty"`
 }
 
 // VerifyHash computes a hash of the sent event, and verifies
