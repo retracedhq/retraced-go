@@ -248,6 +248,11 @@ var searchTmplSource = `query Search($query: String!, $last: Int, $before: Strin
 								key
 								value
 							}		{{- end}}
+				{{if .ExternalID -}}	external_id		{{- end}}
+				{{if .Metadata -}}  metadata {
+								key
+								value
+							}		{{- end}}
 				{{if .AnyGroup -}}	group {
 					{{if .GroupID -}}	id	{{- end}}
 					{{if .GroupName -}}	name	{{- end}}
@@ -345,6 +350,12 @@ func (mask *EventNodeMask) CSVHeaders() []string {
 	}
 	if mask.Raw {
 		headers = append(headers, "raw")
+	}
+	if mask.ExternalID {
+		headers = append(headers, "external_id")
+	}
+	if mask.Metadata {
+		headers = append(headers, "metadata")
 	}
 	if mask.GroupID {
 		headers = append(headers, "group_id")
