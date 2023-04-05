@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -99,10 +99,10 @@ func (c *Client) ReportEvent(event *Event) (*NewEventRecord, error) {
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("Unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
+		return nil, fmt.Errorf("unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
 	}
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -152,10 +152,10 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, actorID string, ta
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK { // There's a pending PR in the retraced API to match this.
-		return nil, fmt.Errorf("Unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
+		return nil, fmt.Errorf("unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
 	}
 
-	contents, err := ioutil.ReadAll(resp.Body)
+	contents, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

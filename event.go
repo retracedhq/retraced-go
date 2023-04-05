@@ -63,7 +63,7 @@ type Event struct {
 func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	// Basic sanity check
 	if event.Action == "" {
-		return fmt.Errorf("Missing required field for hash verification: Action")
+		return fmt.Errorf("missing required field for hash verification: Action")
 	}
 
 	hashTarget := event.BuildHashTarget(newEvent)
@@ -72,7 +72,7 @@ func (event *Event) VerifyHash(newEvent *NewEventRecord) error {
 	result := hex.EncodeToString(hashBytes[:])
 
 	if result != newEvent.Hash {
-		return fmt.Errorf("Hash mismatch: local[%s] != remote[%s]", result, newEvent.Hash)
+		return fmt.Errorf("hash mismatch: local[%s] != remote[%s]", result, newEvent.Hash)
 	}
 
 	return nil

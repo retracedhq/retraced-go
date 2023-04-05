@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -654,10 +654,10 @@ func (ec *EventsConnection) call() error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		if body, err := ioutil.ReadAll(resp.Body); err == nil {
+		if body, err := io.ReadAll(resp.Body); err == nil {
 			log.Printf("GraphQL error response: %s", body)
 		}
-		return fmt.Errorf("Unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
+		return fmt.Errorf("unexpected response from retraced api endpoint %s: %d", req.URL.String(), resp.StatusCode)
 	}
 
 	root := &graphQLSearchRoot{}
