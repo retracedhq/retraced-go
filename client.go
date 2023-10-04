@@ -168,6 +168,30 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, actorID string, ta
 	return &viewerToken, nil
 }
 
+// DeleteViewerSessions will delete all viewer sessions for the given actor in the given group.
+func (c *Client) DeleteViewerSessions(groupID string, actorID string) error {
+	url := fmt.Sprintf("%s/v1/project/%s/group/%s/actor/%s/viewersessions", c.Endpoint, c.projectID, groupID, actorID)
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.token))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
 // Query searches for events using the Publisher API's GraphQL endpoint.
 func (c *Client) Query(sq *StructuredQuery, mask *EventNodeMask, pageSize int) (EventsPager, error) {
 	url := fmt.Sprintf("%s/publisher/v1/project/%s/graphql", c.Endpoint, c.projectID)
