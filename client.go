@@ -152,3 +152,26 @@ func (c *Client) GetViewerToken(groupID string, isAdmin bool, actorID string, ta
 
 	return &viewerToken, nil
 }
+
+func (c *Client) DeleteViewerSessions(groupID string, actorID string) error {
+	url := fmt.Sprintf("%s/v1/project/%s/group/%s/actor/%s/viewersessions", c.Endpoint, c.projectID, groupID, actorID)
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Token token=%s", c.token))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("Unexpected response from retraced api: %d", resp.StatusCode)
+	}
+
+	return nil
+}
