@@ -29,10 +29,10 @@ type Event struct {
 	Target *Target `json:"target,omitempty"`
 
 	// Description is a string with the full details of the event
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 
 	// SourceIP is the client ip address where the event was performed
-	SourceIP string `json:"source_ip"`
+	SourceIP string `json:"source_ip,omitempty"`
 
 	// Actor represents the entity that performed the action
 	Actor *Actor `json:"actor,omitempty"`
@@ -41,18 +41,18 @@ type Event struct {
 	Fields Fields `json:"fields,omitempty"`
 
 	// IsFailure is an optional flag that, when set, indicates that this audited event is a failed use of privileges
-	IsFailure bool `json:"is_failure"`
+	IsFailure bool `json:"is_failure,omitempty"`
 
 	// IsAnonymous is an optional flag that, when set, indicates that this is an anonymous event
-	IsAnonymous bool `json:"is_anonymous"`
+	IsAnonymous bool `json:"is_anonymous,omitempty"`
 
 	// Component is an identifier for a specific component of a vendor app platform
 	// Component can be set on each Event, or on an instance of retraced.Client
-	Component string `json:"component"`
+	Component string `json:"component,omitempty"`
 
 	// Version is an identifier for the specific version of this component, usually a git SHA
 	// Version can be set on each Event, or on an instance of retraced.Client
-	Version string `json:"version"`
+	Version string `json:"version,omitempty"`
 
 	// apiVersion is set here to allow updates to this model without breaking the API server
 	apiVersion int
